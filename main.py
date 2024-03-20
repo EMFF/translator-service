@@ -1,20 +1,14 @@
-import os
-
-from flask import Flask
-from flask import request, jsonify
+import functions_framework
+from flask import jsonify
 from src.translator import translate_content
 
-app = Flask(__name__)
+@functions_framework.http
+def translate(request):
+    request_args = request.args
 
-@app.route("/")
-def translator():
-    content = request.args.get("content", default = "", type = str)
-    is_english, translated_content = translate_content(content)
+    if request_args and "content" in request_args:
+        content = request_args["content"]
     return jsonify({
         "is_english": is_english,
         "translated_content": translated_content,
     })
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
